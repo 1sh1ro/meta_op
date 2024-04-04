@@ -6,31 +6,6 @@ pragma solidity ^0.6.10;
  */
 contract InternalFunction{  
     /**
-     * @notice 根据指定的区块号获取hash(仅支持最近256个区块，且不包含当前区块)
-     * @param uint256 blockNumber
-     * @return bytes32  区块的hash值
-     */
-    function getBlockhash(uint256 blockNumber) view public returns(bytes32){
-        return blockhash(blockNumber);
-    }
-
-    /**
-     * @notice 获取当前区块的区块高度
-     * @return uint256 区块高度
-     */
-    function getBlockNumber() view public returns(uint256){
-        return block.number;
-    }
-    
-    /**
-     * @notice 获取当前区块的时间戳
-     * @return uint256 时间戳
-     */
-    function getTimestamp() view public returns(uint256){
-        return now;
-    }
-    
-    /**
      *  @notice 判断地址是否是合约地址
      */
     function isContract(address addr) view public returns (bool){
