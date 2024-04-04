@@ -53,20 +53,37 @@ contract Apply {
     }
 
     //测试advance
-    function get_log2_result(uint x) public view returns(uint) {
+    function get_log2_result(uint x) public pure returns(uint) {
         return SafeMath.log2(x); //x = 2, return 1
     }
 
-    function get_log_result(uint m, uint n) public view returns(uint) {
+    function get_log_result(uint m, uint n) public pure returns(uint) {
         return SafeMath.log(m, n); //m = 10, n = 100, return 2
     }
 
-    function get_exp2_result(int n) public view returns(uint) {
+    function get_exp2_result(int n) public pure returns(uint) {
         return SafeMath.exp2(n); //n = 2, return 4
     }
 
-    function get_exp_result(int m, int n) public view returns(int) {
+    function get_exp_result(int m, int n) public pure returns(int) {
         return SafeMath.exp(m, n); //m = +-2, n =2, return 4; m=-2, n=1, return -2
+    }
+
+    //测试Float
+    function get_fmul_result(uint256 a, uint8 dA, uint256 b, uint8 dB) public pure returns(uint256 c, uint8 decimals) {
+        return FloatSafeMath.fmul(a,dA,b,dB);
+    }
+
+    function get_fdiv_result(uint256 a, uint8 dA, uint256 b, uint8 dB) public pure returns(uint256 c, uint8 decimals) {
+        return FloatSafeMath.fdiv(a,dA,b,dB);
+    }
+
+    function get_fadd_result(uint256 a, uint8 dA, uint256 b, uint8 dB) public pure returns(uint256 c, uint8 decimals) {
+        return FloatSafeMath.fadd(a,dA,b,dB);
+    }
+
+    function get_fsub_result(uint256 a, uint8 dA, uint256 b, uint8 dB) public pure returns(uint256 c, uint8 decimals) {
+        return FloatSafeMath.fsub(a,dA,b,dB);
     }
 
 }
