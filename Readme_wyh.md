@@ -1,4 +1,3 @@
-4.03
     ! 增加InterfaceLayer/Manage&Verify内部分内容
         Manage中
             ERC1967 接口提供了代理合约存储槽的标准，用于跟踪代理合约的升级和管理操作,
@@ -11,6 +10,14 @@
             IERC1271 为标准签名验证方法的接口，用于在智能合约中验证签名的有效性。
             IERC5267 接口可以获取用于 EIP-712 签名的域分隔符的相关信息。
 
+    ! 新增InterfaceLayer/bill.sol
+
+    ! 新增BaseLayer/Introspection
+        Introspection中
+            ERC165 标准定义了一种通用的方法来检查智能合约是否支持特定接口。
+            IERC165 接口是ERC165 标准的具体实现。
+            ERC165Checker 合约是一个工具，可用于检查其他合约是否支持特定接口。  
+
     ! 增加MiddlewareLayer/FuncControl&Upgrade内部分内容
         FuncControl中
             FuncCallContract 实现对函数调用及其参数的记录和跟踪。
@@ -20,6 +27,8 @@
         Upgrade中
             ProxyAdmin 是辅助合约，允许合约的所有者执行代理合约的升级，并调用新实现上的函数。
             TransparentUpgradeableProxy 合约实现了一个使用 ProxyAdmin 实例进行管理的可升级代理。
+
+    ! 新增MiddlewareLayer/Proxy(from OpenZeppelin),同时加入ERC1967所需要的Address.sol和StorageSlot.sol.
     
     ! 修改BaseLayer/SafeMathOperation/library&test中部分内容,将原来的Math拆分为FloatMath与IntMath
         library中
@@ -30,9 +39,13 @@
 
     ! 修改BaseLayer,将原来SetOperation合并至DataStructure
 
-
-4.04
     ! 新增MiddlewareLayer/BasicControl/Proxy/Sing.sol&SingProxy.sol与InterfaceLayer/Manage/ISing.sol
         其中ISing为接口,三个文件协同完成代理模式的实现
+
+    ! 修改BaseLayer/BaseTransfer/library/base64.sol
+        增加decode及decode4解码操作
+    
+
+    
 
 
