@@ -1,19 +1,17 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts (last updated v5.0.0) (proxy/ERC1967/ERC1967Utils.sol)
+// From OpenZeppelin
 
 pragma solidity ^0.8.20;
 
-import {IBeacon} from "../beacon/IBeacon.sol";
-import {Address} from "../Address.sol";
-import {StorageSlot} from "../StorageSlot.sol";
+import {IBeacon} from "../../../BasicControl/Proxy/beacon/IBeacon.sol";
+import {Address} from "../../../BasicControl/Proxy/Address.sol";
+import {StorageSlot} from "../../../BasicControl/Proxy/StorageSlot.sol";
 
 /**
  * @dev This abstract contract provides getters and event emitting update functions for
- * https://eips.ethereum.org/EIPS/eip-1967[EIP1967] slots.
+ * https://eips.ethereum.org/EIPS/eip-1967[ERC-1967] slots.
  */
 library ERC1967Utils {
-    // We re-declare ERC-1967 events here because they can't be used directly from IERC1967.
-    // This will be fixed in Solidity 0.8.21. At that point we should remove these events.
     /**
      * @dev Emitted when the implementation is upgraded.
      */
@@ -64,7 +62,7 @@ library ERC1967Utils {
     }
 
     /**
-     * @dev Stores a new address in the EIP1967 implementation slot.
+     * @dev Stores a new address in the ERC-1967 implementation slot.
      */
     function _setImplementation(address newImplementation) private {
         if (newImplementation.code.length == 0) {
@@ -101,7 +99,7 @@ library ERC1967Utils {
     /**
      * @dev Returns the current admin.
      *
-     * TIP: To get this value clients can read directly from the storage slot shown below (specified by EIP1967) using
+     * TIP: To get this value clients can read directly from the storage slot shown below (specified by ERC-1967) using
      * the https://eth.wiki/json-rpc/API#eth_getstorageat[`eth_getStorageAt`] RPC call.
      * `0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103`
      */
@@ -110,7 +108,7 @@ library ERC1967Utils {
     }
 
     /**
-     * @dev Stores a new address in the EIP1967 admin slot.
+     * @dev Stores a new address in the ERC-1967 admin slot.
      */
     function _setAdmin(address newAdmin) private {
         if (newAdmin == address(0)) {
@@ -144,7 +142,7 @@ library ERC1967Utils {
     }
 
     /**
-     * @dev Stores a new beacon in the EIP1967 beacon slot.
+     * @dev Stores a new beacon in the ERC-1967 beacon slot.
      */
     function _setBeacon(address newBeacon) private {
         if (newBeacon.code.length == 0) {

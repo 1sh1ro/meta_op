@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.7.5;
-//浮点数安全运算
+//浮点数安全运算(加减乘除)
 library FloatSafeMath {
     using FloatSafeMath for uint256;
     
@@ -86,8 +86,29 @@ library FloatSafeMath {
         }
         
     }
-    
-    
+
+
+    function favg(uint256 a, uint8 dA, uint256 b, uint8 dB) internal pure returns (uint256 c, uint8 decimals) {
+        decimals = dA;
+        c = (a.add(b)).div(2);
+    }
+
+    function fsquare(uint256 a, uint8 dA) internal pure returns (uint256 c, uint8 decimals) {
+        decimals = dA;
+        c = a.mul(a).div(10 ** uint256(dA));
+    }
+
+    function fsqrt(uint256 a, uint8 dA) internal pure returns (uint256 c, uint8 decimals) {
+        decimals = dA;
+        uint256 cSqrt = a.mul(10 ** uint256(dA/2));
+        uint256 b = a.mul(10 ** uint256(dA)).div(cSqrt).add(cSqrt).div(2);
+        while (b < cSqrt) {
+            cSqrt = b;
+            b = a.mul(10 ** uint256(dA)).div(cSqrt).add(cSqrt).div(2);
+        }
+        c = cSqrt;
+    }
+       
 }
 
     

@@ -30,4 +30,12 @@ contract Test is FuncCallContract {
     {
         return x + 233;
     }
+
+    function newFunction(string memory data)
+        external
+        LogFuncCall("newFunction(string)")
+        returns (string memory)
+    {
+        return data;
+    }
 }

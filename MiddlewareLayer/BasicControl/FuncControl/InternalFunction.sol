@@ -1,7 +1,7 @@
 pragma solidity ^0.6.10;
 
 /**
- * @author SomeJoker
+ * @author SomeJoker(部分)
  * @title solidity 内置函数转换
  */
 contract InternalFunction{  
@@ -53,5 +53,14 @@ contract InternalFunction{
         bytes32 _data = keccak256(abi.encodePacked(bytes1(0xff), deployer, salt, bytecodeHash));
         return address(uint160(uint256(_data)));
     }
+
+
+     /**
+     * @notice 计算合约代码的哈希值(添加)
+     */
+    function calculateCodeHash(address addr) public view returns (bytes32) {
+        bytes memory code = getCodeByAddress(addr);
+        return keccak256(code);
+    }//计算给定合约地址的代码节码的哈希值
 
 }   

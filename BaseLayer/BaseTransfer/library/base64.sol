@@ -59,4 +59,54 @@ library Base64 {
 
         return string(result);
     }
+
+
+
+     function decode(string memory base64str) internal pure returns (bytes memory) {
+    bytes memory table = TABLE;
+    uint256 len = bytes(base64str).length;
+    if (len == 0) return new bytes(0);
+    uint256 decodedLen = len * 3 / 4;//计算解码后的字节数组长度
+    
+    bytes memory result = new bytes(decodedLen);//创建存储解码结果的字节数组
+
+    assembly {
+        let tablePtr := add(table, 1)
+        let resultPtr := add(result, 32)
+
+        for {
+            let i := 0
+        } lt(i, len) {
+            i := add(i, 4)
+        } {
+            // 获取每4个Base64字符并解码为3个字节数据
+            let input := mload(add(base64str, i))
+
+            let out := mload(add(tablePtr, and(shr(24, input), 0x3F)))
+            out := shl(8, out)
+            out := add(out, and(mload(add(tablePtr, and(shr(16, input), 0x3F)), 0xFF)))
+            out := shl(8, out)
+
+            switch and(shr(8, input), 0xFF)
+            case 0x3d {
+                mstore(sub(resultPtr, 1), shr(240, out))
+            }
+            case 0x3d3d {
+                mstore(sub(resultPtr, 2), shr(248, out))
+            }
+            default {
+                let out := add(out, and(mload(add(tablePtr, and(shr(8, input), 0x3F)), 0xFF)))
+                out := shl(8, out)
+                out := add(out, and(mload(add(tablePtr, and(input, 0x3F)), 0xFF)))
+                mstore(resultPtr, out)
+                resultPtr := add(resultPtr, 3)
+            }
+        }
+
+        mstore(result, decodedLen)
+    }
+
+    return result;
+}
+
 }
