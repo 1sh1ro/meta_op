@@ -10,7 +10,8 @@
             IERC1271 为标准签名验证方法的接口，用于在智能合约中验证签名的有效性。
             IERC5267 接口可以获取用于 EIP-712 签名的域分隔符的相关信息。
 
-    ! 新增InterfaceLayer/bill.sol
+    ! 新增InterfaceLayer/BillQuery/bill.sol
+        bill接口包括了查询持有者账单、根据账单编号查询账单、以及查询待背书账单的功能。
 
     ! 新增BaseLayer/Introspection
         Introspection中
@@ -33,7 +34,7 @@
     ! 修改BaseLayer/SafeMathOperation/library&test中部分内容,将原来的Math拆分为FloatMath与IntMath
         library中
             IntMath 专注整型计算，在原来基础上增加了取平均、对数、乘方等进阶运算
-            FloatMath 专注浮点数计算
+            FloatMath 专注浮点数计算,加减乘除，平均平方开方
         test中
             Test_Math 增加了对于新增运算的测试
 
@@ -43,7 +44,31 @@
         其中ISing为接口,三个文件协同完成代理模式的实现
 
     ! 修改BaseLayer/BaseTransfer/library/base64.sol
-        增加decode及decode4解码操作
+        重写decode解码操作,将Base64编码的字符串解码为原始的字节数组，删去decode4
+    
+    ！增加BaseLayer/SafeMathOperation/library&test中部分内容
+        增加浮点数运算的取平均平方开方操作与对应的test
+        
+    ！修改MiddlewareLayer/BasicControl/Counter中部分内容
+        将原MultipleCounter修改为整合了MultipleCounter与SimpleCounter核心函数的CombinedCounter,在最小化性能开销的同时保证功能
+
+    ！增加MiddlewareLayer/BasicControl/FuncControl/FuncCallContract.sol中部分内容    
+        在Test合约中添加了newFunction新函数，，记录函数调用信息并将其触发FuncCall事件。
+
+    ！增加MiddlewareLayer/BasicControl/FuncControl/InternalFunction.sol中部分内容
+        增加公共函数calculateCodeHash以获得给定合约地址的代码节码的哈希值
+
+    ！增加BaseLayer/Crypto/LibDocode.sol中部分内容
+        增加函数encode以对签名数据进行编码
+    
+    ！新增BusinessLayer/RedPacket/RedPacket.sol
+        实现发红包功能，合约创建者可以向多个地址发送红包，并指定总金额和红包个数。每个接收者可以领取自己的红包金额。
+
+    ！新增MiddlewareLayer/BasicControl/Proxy/beacon&Address.sol&Clones.sol&Proxy.sol&StorageSlot.sol
+        主要辅助ERC1967
+
+    ！MiddlewareLayer/BasicControl/Upgrade移入Proxy中
+
     
 
     

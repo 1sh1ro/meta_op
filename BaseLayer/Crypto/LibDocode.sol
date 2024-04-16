@@ -25,4 +25,9 @@ library LibDocode {
             result := mload(add(source, 32))
         }
     }
+
+    function encode(address addr) internal pure returns (bytes) {
+        bytes32 data = bytesToBytes32(bytes32(uint256(addr)));
+        return abi.encodePacked(data);
+    }//对签名数据进行编码
 }

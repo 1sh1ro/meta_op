@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.20;
 
-import {Proxy} from "../Proxy.sol";
+import {Proxy} from "../../../BasicControl/Proxy/Proxy.sol";
 import {ERC1967Utils} from "./ERC1967Utils.sol";
 
 /**

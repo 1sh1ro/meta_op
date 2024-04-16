@@ -86,4 +86,16 @@ contract Apply {
         return FloatSafeMath.fsub(a,dA,b,dB);
     }
 
+    function get_favg_result(uint256 a, uint8 dA, uint256 b, uint8 dB) public pure returns(uint256 c, uint8 decimals) {
+        return FloatSafeMath.favg(a,dA,b,dB);
+    }
+
+    function get_fsquare_result(uint256 a, uint8 dA) public pure returns(uint256 c, uint8 decimals) {
+        return FloatSafeMath.fsquare(a,dA);
+    }
+
+    function get_fsqrt_result(uint256 a, uint8 dA) public pure returns(uint256 c, uint8 decimals) {
+        return FloatSafeMath.fsqrt(a,dA);
+    }
+
 }
