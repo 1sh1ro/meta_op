@@ -4,26 +4,41 @@ pragma solidity ^0.8.24;
 /**
  * @title SM3 Cryptographic Hash Function
  * @dev Implementation of the SM3 cryptographic hash function as per Chinese standard GM/T 0004-2012
+ * @author uuu & 1shiro
  */
 library SM3 {
     // Constants for the SM3 hash function
     uint32 constant T1 = 0x79CC4519;
     uint32 constant T2 = 0x7A879D8A;
-    function sm3Padding(bytes memory message) public  pure returns (bytes memory) {
-        uint256 len = message.length * 8;
-        uint256 k = 448 - ((len + 1) % 512);
+    function sm3Padding(bytes memory message) public pure returns (bytes memory) {
+        uint256 len = message.length * 8; // 消息长度，单位为比特
+        uint256 k = 448 - ((len + 1) % 512); // 计算需要填充的0的长度，使得总长度满足 (len + 1 + k) % 512 = 448
         if (k < 0) {
             k += 512;
         }
-        bytes memory padding = new bytes((k + 64) / 8);
-        padding[0] = 0x80;
-        for (uint256 i = 0; i != 8; i++) {
+        uint256 totalLength = message.length + 1 + ((k-7) / 8) + 8; // 总长度 = 消息长度 + 1位0x80 + (k-7)/8个0 + 8字节的长度字段
 
-            padding[padding.length - 8 + i] = bytes1(uint8(len >> (8 * (7 - i))) & 0xFF);
+        bytes memory paddedMessage = new bytes(totalLength); // 创建足够长度的新数组
+
+        // 复制原始消息到新数组
+        for (uint256 i = 0; i < message.length; i++) {
+            paddedMessage[i] = message[i];
         }
-        return abi.encodePacked(message, padding);
-    }
 
+        // 添加0x80到消息末尾
+        paddedMessage[message.length] = 0x80;
+
+        // 填充0，直到消息长度为448 mod 512
+        // 注意：新的bytes数组默认已经填充了0，所以这里不需要额外操作
+
+        // 添加原始消息长度的64位大端表示
+        for (uint256 i = 0; i < 8; i++) {
+            paddedMessage[totalLength - 8 + i] = bytes1(uint8(len >> (8 * (7 - i))));
+        }
+
+        return paddedMessage;
+    }
+    
     // Call sm3Transform to compute the final hash output
     function sm3FinalHash(bytes memory mes) public pure returns (uint32[8] memory) {
         uint32[16] memory block;
@@ -56,15 +71,15 @@ library SM3 {
         uint32[68] memory W;
         uint32[64] memory W1;
 
-        for (uint i = 0; i != 16; i++) {
+        for (uint i = 0; i < 16; i++) {
             W[i] = block[i];
         }
 
-        for (uint i = 16; i != 68; i++) {
+        for (uint i = 16; i < 68; i++) {
             W[i] = P1(W[i-16] ^ W[i-9] ^ leftRotate(W[i-3], 15)) ^ leftRotate(W[i-13], 7) ^ W[i-6];
         }
 
-        for (uint i = 0; i != 64; i++) {
+        for (uint i = 0; i < 64; i++) {
             W1[i] = W[i] ^ W[i+4];
         }
 
@@ -77,7 +92,7 @@ library SM3 {
         uint32 G = hash[6];
         uint32 H = hash[7];
 
-        for (uint j = 0; j != 64; j++) {
+        for (uint j = 0; j < 64; j++) {
             uint32 SS1;
             if(j<16){
                 SS1 = leftRotate((leftRotate(A, 12) + E + leftRotate(T1, j % 32)) & 0xFFFFFFFF, 7);
