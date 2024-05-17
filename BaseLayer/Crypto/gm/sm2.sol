@@ -1,62 +1,68 @@
-// SPDX-License-Identifier: MIT
-// version: 0.1
-
 pragma solidity ^0.8.9;
 
 library SM2Curve {
-
-	event Log(string, uint);
-
+	//有限域
 	uint constant SM2_P = 0xfffffffeffffffffffffffffffffffffffffffff00000000ffffffffffffffff;
+
 	uint constant SM2_A = 0xfffffffeffffffffffffffffffffffffffffffff00000000fffffffffffffffc;
 	uint constant SM2_B = 0x28e9fa9e9d9f5e344d5a9e4bcf6509a7f39789f515ab8f92ddbcbd414d940e93;
+
+	//基点
 	uint constant SM2_X = 0x32c4ae2c1f1981195f9904466a39c9948fe30bbff2660be1715a4589334c74c7;
 	uint constant SM2_Y = 0xbc3736a2f4f6779c59bdcee36b692153d0a9877cc62a474002df32e52139f0a0;
+
+	//阶
 	uint constant SM2_N = 0xfffffffeffffffffffffffffffffffff7203df6b21c6052b53bbf40939d54123;
+
 	uint constant SM2_U = (SM2_P - 3)/4 + 1;
+
+	event Log(string, uint);
 
 	function submod(uint a, uint b, uint p) internal pure returns (uint) {
 		if (a >= b) {
 			return a - b;
-		} else {
+		} 
+		else {
 			return ((p - b) + a);
 		}
 	}
 
-	// a/2 == (a + p)/2 == (a + 1)/2 + (p - 1)/2
-	// FIXME: change add() formula with out div2 operation
-	function div2mod(uint a, uint p) internal pure returns (uint) {
-		if (a % 2 == 0) {
-			return a/2;
-		} else {
-			return ((a + 1)/2) + (p - 1)/2;
-		}
-	}
-
 	function expmod(uint a, uint e, uint m) internal pure returns (uint) {
-		uint r = 1;
-		while (e > 0) {
-			if (e & 1 == 1) {
-				r = mulmod(r, a, m);
-			}
-			a = mulmod(a, a, m);
-			e >>= 1;
-		}
-		return r;
+    	uint r = 1;
+    	for (; e > 0; e >>= 1) {
+        	if (e & 1 == 1) {
+            	r = mulmod(r, a, m);
+        	}
+        	a = mulmod(a, a, m);
+    	}
+    	return r;
 	}
 
 	function invmod(uint a, uint p) internal pure returns (uint) {
 		return expmod(a, p-2, p);
 	}
 
+	function div2mod(uint a, uint p) internal pure returns (uint) {
+		if (a % 2 == 0) {
+			return a/2;
+		} 
+		else {
+			return ((a + 1)/2) + (p - 1)/2;
+			// a/2 == (a + p)/2 == (a + 1)/2 + (p - 1)/2
+		}
+	}
+
+//模逆
 	function invmodp(uint a) internal pure returns (uint) {
-		uint r;
 		uint a1;
 		uint a2;
 		uint a3;
 		uint a4;
 		uint a5;
+
 		int i;
+		
+		uint r;
 
 		a1 = mulmod(a, a, SM2_P);
 		a2 = mulmod(a1, a, SM2_P);
@@ -69,14 +75,11 @@ library SM2Curve {
 		a4 = mulmod(a4, a4, SM2_P);
 		a4 = mulmod(a4, a3, SM2_P);
 		a5 = mulmod(a4, a4, SM2_P);
-		for (i = 1; i < 8; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 1; i < 8; i++)a5 = mulmod(a5, a5, SM2_P);
 		a5 = mulmod(a5, a4, SM2_P);
-		for (i = 0; i < 8; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 0; i < 8; i++)a5 = mulmod(a5, a5, SM2_P);
 		a5 = mulmod(a5, a4, SM2_P);
-		for (i = 0; i < 4; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 0; i < 4; i++)a5 = mulmod(a5, a5, SM2_P);
 		a5 = mulmod(a5, a3, SM2_P);
 		a5 = mulmod(a5, a5, SM2_P);
 		a5 = mulmod(a5, a5, SM2_P);
@@ -86,38 +89,31 @@ library SM2Curve {
 		a4 = mulmod(a5, a5, SM2_P);
 		a3 = mulmod(a4, a1, SM2_P);
 		a5 = mulmod(a4, a4, SM2_P);
-		for (i = 1; i< 31; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 1; i< 31; i++)a5 = mulmod(a5, a5, SM2_P);
 		a4 = mulmod(a5, a4, SM2_P);
 		a4 = mulmod(a4, a4, SM2_P);
 		a4 = mulmod(a4, a, SM2_P);
 		a3 = mulmod(a4, a2, SM2_P);
-		for (i = 0; i < 33; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 0; i < 33; i++)a5 = mulmod(a5, a5, SM2_P);
 		a2 = mulmod(a5, a3, SM2_P);
 		a3 = mulmod(a2, a3, SM2_P);
-		for (i = 0; i < 32; i++)
-			a5 = mulmod(a5, a5, SM2_P);
-		a2 = mulmod(a5, a3, SM2_P);
-		a3 = mulmod(a2, a3, SM2_P);
-		a4 = mulmod(a2, a4, SM2_P);
-		for (i = 0; i < 32; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 0; i < 32; i++)a5 = mulmod(a5, a5, SM2_P);
 		a2 = mulmod(a5, a3, SM2_P);
 		a3 = mulmod(a2, a3, SM2_P);
 		a4 = mulmod(a2, a4, SM2_P);
-		for (i = 0; i < 32; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 0; i < 32; i++)a5 = mulmod(a5, a5, SM2_P);
 		a2 = mulmod(a5, a3, SM2_P);
 		a3 = mulmod(a2, a3, SM2_P);
 		a4 = mulmod(a2, a4, SM2_P);
-		for (i = 0; i < 32; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 0; i < 32; i++)a5 = mulmod(a5, a5, SM2_P);
 		a2 = mulmod(a5, a3, SM2_P);
 		a3 = mulmod(a2, a3, SM2_P);
 		a4 = mulmod(a2, a4, SM2_P);
-		for (i = 0; i < 32; i++)
-			a5 = mulmod(a5, a5, SM2_P);
+		for (i = 0; i < 32; i++)a5 = mulmod(a5, a5, SM2_P);
+		a2 = mulmod(a5, a3, SM2_P);
+		a3 = mulmod(a2, a3, SM2_P);
+		a4 = mulmod(a2, a4, SM2_P);
+		for (i = 0; i < 32; i++)a5 = mulmod(a5, a5, SM2_P);
 		r = mulmod(a4, a5, SM2_P);
 
 		return r;
@@ -141,7 +137,8 @@ library SM2Curve {
 			t1 = mulmod(P.X, P.X, SM2_P);
 			t1 = mulmod(t1, P.X, SM2_P);
 			t1 = addmod(t1, SM2_B, SM2_P);
-		} else {
+		} 
+		else {
 			t0 = mulmod(P.Y, P.Y, SM2_P);
 			t1 = mulmod(P.Z, P.Z, SM2_P);
 			t2 = mulmod(t1, t1, SM2_P);
@@ -155,9 +152,6 @@ library SM2Curve {
 			t1 = addmod(t1, t2, SM2_P);
 		}
 
-		//emit Log("t0", t0);
-		//emit Log("t1", t1);
-
 		return (t0 == t1);
 	}
 
@@ -165,6 +159,7 @@ library SM2Curve {
 		return SM2Point(P.X, SM2_P - P.Y, P.Z);
 	}
 
+//双倍运算
 	function dbl(SM2Point memory P) public returns (SM2Point memory) {
 		uint X1 = P.X;
 		uint Y1 = P.Y;
@@ -180,22 +175,53 @@ library SM2Curve {
 		uint Z3;
 
 		T1 = mulmod(Z1, Z1, SM2_P);
-		T2 = submod(X1, T1, SM2_P);	//emit Log("T2 = X1 - T1 = ", T2);
-		T1 = addmod(X1, T1, SM2_P);	//emit Log("T1 = X1 + T1 = ", T1);
-		T2 = mulmod(T2, T1, SM2_P);	//emit Log("T2 = T2 * T1 = ", T2);
-		T2 = mulmod(3, T2, SM2_P);	//emit Log("T2 =  3 * T2 = ", T2);
-		Y3 = addmod(Y1, Y1, SM2_P);	//emit Log("Y3 =  2 * Y1 = ", Y3);
-		Z3 = mulmod(Y3, Z1, SM2_P);	//emit Log("Z3 = Y3 * Z1 = ", Z3);
-		Y3 = mulmod(Y3, Y3, SM2_P);	//emit Log("Y3 = Y3^2    = ", Y3);
-		T3 = mulmod(Y3, X1, SM2_P);	//emit Log("T3 = Y3 * X1 = ", T3);
-		Y3 = mulmod(Y3, Y3, SM2_P);	//emit Log("Y3 = Y3^2    = ", Y3);
-		Y3 = div2mod(Y3, SM2_P);	//emit Log("Y3 = Y3/2    = ", Y3);
-		X3 = mulmod(T2, T2, SM2_P);	//emit Log("X3 = T2^2    = ", X3);
-		T1 = addmod(T3, T3, SM2_P);	//emit Log("T1 =  2 * T1 = ", T1);
-		X3 = submod(X3, T1, SM2_P);	//emit Log("X3 = X3 - T1 = ", X3);
-		T1 = submod(T3, X3, SM2_P);	//emit Log("T1 = T3 - X3 = ", T1);
-		T1 = mulmod(T1, T2, SM2_P);	//emit Log("T1 = T1 * T2 = ", T1);
-		Y3 = submod(T1, Y3, SM2_P);	//emit Log("Y3 = T1 - Y3 = ", Y3);
+		T2 = submod(X1, T1, SM2_P);	
+		//emit Log("T2 = X1 - T1 = ", T2);
+
+		T1 = addmod(X1, T1, SM2_P);	
+		//emit Log("T1 = X1 + T1 = ", T1);
+
+		T2 = mulmod(T2, T1, SM2_P);	
+		//emit Log("T2 = T2 * T1 = ", T2);
+
+		T2 = mulmod(3, T2, SM2_P);	
+		//emit Log("T2 =  3 * T2 = ", T2);
+
+		Y3 = addmod(Y1, Y1, SM2_P);	
+		//emit Log("Y3 =  2 * Y1 = ", Y3);
+
+		Z3 = mulmod(Y3, Z1, SM2_P);	
+		//emit Log("Z3 = Y3 * Z1 = ", Z3);
+
+		Y3 = mulmod(Y3, Y3, SM2_P);	
+		//emit Log("Y3 = Y3^2    = ", Y3);
+
+		T3 = mulmod(Y3, X1, SM2_P);	
+		//emit Log("T3 = Y3 * X1 = ", T3);
+
+		Y3 = mulmod(Y3, Y3, SM2_P);	
+		//emit Log("Y3 = Y3^2    = ", Y3);
+
+		Y3 = div2mod(Y3, SM2_P);	
+		//emit Log("Y3 = Y3/2    = ", Y3);
+
+		X3 = mulmod(T2, T2, SM2_P);	
+		//emit Log("X3 = T2^2    = ", X3);
+
+		T1 = addmod(T3, T3, SM2_P);	
+		//emit Log("T1 =  2 * T1 = ", T1);
+
+		X3 = submod(X3, T1, SM2_P);	
+		//emit Log("X3 = X3 - T1 = ", X3);
+
+		T1 = submod(T3, X3, SM2_P);
+		//emit Log("T1 = T3 - X3 = ", T1);
+
+		T1 = mulmod(T1, T2, SM2_P);
+		//emit Log("T1 = T1 * T2 = ", T1);
+
+		Y3 = submod(T1, Y3, SM2_P);	
+		//emit Log("Y3 = T1 - Y3 = ", Y3);
 
 		return SM2Point(X3, Y3, Z3);
 	}
@@ -205,6 +231,7 @@ library SM2Curve {
 		return (P.Z == 0);
 	}
 
+//点加
 	function add(SM2Point memory P, SM2Point memory Q) public returns (SM2Point memory) {
 		uint X1 = P.X;
 		uint Y1 = P.Y;
@@ -261,6 +288,7 @@ library SM2Curve {
 		return SM2Point(X3, Y3, Z3);
 	}
 
+//标量乘
 	function scalarMul(uint k, SM2Point memory P) public returns (SM2Point memory) {
 		SM2Point memory Q = SM2Point(1, 1, 0);
 
@@ -304,8 +332,10 @@ library SM2Curve {
 	 *	u = (p - 3)/4 + 1
 	 *	y1 = g^u (mod p), check y1^2 == g (mod p)
 	 *	if (y1 % 2 != v)
-			y1 = p - y1
+	 *		y1 = p - y1
 	 */
+
+//恢复公钥
 	function sm2recover(bytes32 hash, uint8 _v, bytes32 _r, bytes32 _s) public returns (address) {
 		uint r = uint(_r);
 		uint s = uint(_s);
@@ -333,12 +363,10 @@ library SM2Curve {
 
 		// -Q = (x, -y)
 		SM2Point memory Q = SM2Point(x, SM2_P - y, 1);
-
 		// g = -(s + r)^-1 (mod n)
 		g = addmod(s, r, SM2_N);
 		g = invmod(g, SM2_N);
 		g = SM2_N - g;
-
 		SM2Point memory P = scalarMulGenerator(s);
 		P = add(P, Q);
 
@@ -363,11 +391,14 @@ library SM2Curve {
 		x = mulmod(x, z, SM2_P);
 		y = mulmod(y, z, SM2_P);
 
-		// generate ethereum address generation
-		// replace keccake256 to sm3 in the future
+		//以太坊地址
 		return address(uint160(uint256(keccak256(abi.encodePacked(x, y)))));
 	}
 
+
+/*
+* 验ECDSA签
+*/
 	function sm2verify(bytes32 hash, bytes memory sig) public returns (address) {
 		bytes32 r;
 		bytes32 s;
@@ -391,6 +422,7 @@ library SM2Curve {
 			return address(0x0);
 		}
 
+		//恢复公钥得到以太坊地址
 		return sm2recover(hash, v, r, s);
 	}
 
@@ -398,9 +430,11 @@ library SM2Curve {
 		return isAtInfinity(add(P, neg(Q)));
 	}
 
+  //生成ECDSA签
 	function genSig(uint256 x, uint256 y, uint8 v) public returns (bytes memory) {
         bytes memory res = new bytes(65);
         assembly {
+			//mstore汇编
 			mstore(add(res, 32), x)
 			mstore(add(res, 64), y)
 			mstore8(add(res, 96), v)
@@ -412,8 +446,9 @@ library SM2Curve {
 		return bytes32(x);
     }
 
+//测试有限域
 	function testField() public returns (bool) {
-		SM2Point memory G = SM2Point(SM2_X, SM2_Y, 1);
+		SM2Point memory G = SM2Point(SM2_X, SM2_Y, 1);//基点
 		assert(isOnCurve(G));
 		
 		uint r = 0x4aab6dac98f774bf8268269d5177dab84e5e82bb4323d768f7117cc3bf3b6189;
@@ -433,6 +468,7 @@ library SM2Curve {
 		return true;
 	}
 
+//测试运算
 	function testPoint() public returns (bool) {
 		SM2Point memory R = SM2Point(0x8061401c4f5626681f94f46bb956b879535a1ce4c84053b9aa5f84665041a980, 0xf30ff6d94d44360d13863b9bac32a7c4eb4897144d09b6663a67fe2b4b68a4a0, 1);
 		SM2Point memory S = SM2Point(0x9619582757fd0fcea01cc42d654b90cc113e4d3527113ddc655278880de57c89, 0x8722774b08e5e0ccc4f959fcadf6bb57e32eb905404e510aa8d549babc7c0baa, 1);
@@ -471,7 +507,6 @@ contract sm2_test {
 	function test() public returns (bool) {
 		SM2Curve.testField();
 		SM2Curve.testPoint();
-		// SM2Curve.testSign();
 		return true;
 	}
 }
